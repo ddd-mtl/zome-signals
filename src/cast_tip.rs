@@ -1,5 +1,5 @@
 use hdk::prelude::*;
-use zome_utils::*;
+//use zome_utils::*;
 use crate::*;
 
 
@@ -13,7 +13,7 @@ pub struct CastTipInput {
 ///
 #[hdk_extern]
 fn cast_tip(input: CastTipInput) -> ExternResult<()> {
-  std::panic::set_hook(Box::new(zome_panic_hook));
+  //std::panic::set_hook(Box::new(zome_panic_hook));
   debug!("Casting tip {:?} to {:?}", input.tip, input.peers);
   /// Pre-conditions: Don't call yourself (otherwise could get concurrency issues)
   let me = agent_info()?.agent_latest_pubkey;
@@ -29,7 +29,7 @@ fn cast_tip(input: CastTipInput) -> ExternResult<()> {
   );
   if let Err(e) = res {
     error!("send_remote_signal() failed during cast_tip(): {:?}", e);
-    return zome_error!("send_remote_signal() failed during cast_tip()");
+    return Err(wasm_error!("send_remote_signal() failed during cast_tip()"));
   }
   trace!("calling remote recv_remote_signal() DONE");
   Ok(())

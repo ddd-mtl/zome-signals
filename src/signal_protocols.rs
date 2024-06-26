@@ -1,5 +1,5 @@
 use hdk::prelude::*;
-use zome_utils::*;
+//use zome_utils::*;
 
 
 ///
@@ -77,12 +77,12 @@ impl EntryPulse {
         let state = match record.action() {
             Action::Create(_) => StateChange::Create(is_new),
             Action::Update(_) => StateChange::Update(is_new),
-            _ => return zome_error!("Unhandled Action type"),
+            _ => return Err(wasm_error!("Unhandled Action type")),
         };
         let RecordEntry::Present(Entry::App(bytes)) = record.entry().to_owned()
-          else { return zome_error!("Record has no entry data") };
+          else { return Err(wasm_error!("Record has no entry data")) };
         let Some(EntryType::App(def)) = record.action().entry_type()
-          else { return zome_error!("Record has no entry def") };
+          else { return Err(wasm_error!("Record has no entry def")) };
 
         Ok(Self {
             ah: record.action_address().to_owned(),
@@ -102,12 +102,12 @@ impl EntryPulse {
         match action {
             Action::Create(_) => StateChange::Create(is_new),
             Action::Update(_) => StateChange::Update(is_new),
-            _ => return zome_error!("Unhandled Action type"),
+            _ => return Err(wasm_error!("Unhandled Action type")),
         };
         let Entry::App(bytes) = entry
-          else { return zome_error!("Entry is not an App") };
+          else { return Err(wasm_error!("Entry is not an App")) };
         let Some(EntryType::App(def)) = action.entry_type()
-          else { return zome_error!("Entry has no entry def") };
+          else { return Err(wasm_error!("Entry has no entry def")) };
 
         Ok(Self {
             ah: ha.hash.to_owned(),
