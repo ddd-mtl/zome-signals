@@ -10,6 +10,8 @@ mod cast_tip;
 mod emit_signal;
 mod signal_protocols;
 mod recv_remote_signal;
+mod query;
 
 pub use emit_signal::*;
 pub use signal_protocols::*;
+pub use query::*;
