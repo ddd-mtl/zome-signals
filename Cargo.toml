@@ -7,6 +7,13 @@ edition = "2021"
 [lib]
 crate-type = ["cdylib", "rlib"]
 
+[lints.rust]
+non_upper_case_globals = "allow"
+unused_doc_comments = "allow"
+non_camel_case_types = "allow"
+non_snake_case = "allow"
+unused_attributes = "allow"
+
 [dependencies]
 serde = { version = "=1.0.197", default-features = false }
 hdk = { version = "=0.3.1", default-features = false }
