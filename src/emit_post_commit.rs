@@ -4,7 +4,7 @@ use hdk::prelude::*;
 use crate::*;
 use std::fmt::Debug;
 
-
+/// Emit Entry or Link signal on post_commit()
 pub fn emit_post_commit<E: UnitEnum, L: LinkTypesHelper + Debug>(signedActionList: Vec<SignedActionHashed>) {
     /// Process each Action
     for sah in signedActionList {
