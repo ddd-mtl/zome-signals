@@ -101,7 +101,7 @@ fn emit_new_entry(sah: SignedActionHashed) -> ExternResult<()> {
 }
 
 
-///
+/// same as get_variant() from zome_utils; but we dont want any dep
 fn get_variant_from_index<T: UnitEnum>(entry_index: EntryDefIndex) -> ExternResult<T::Unit> {
     let mut i = 0;
     for variant in T::unit_iter() {
