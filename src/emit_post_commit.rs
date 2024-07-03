@@ -9,7 +9,7 @@ pub fn emit_post_commit<E: UnitEnum, L: LinkTypesHelper + Debug>(signedActionLis
     let this_zome_index = zome_info().unwrap().id;
     /// Process each Action
     for sah in signedActionList {
-        // debug!(" - {}", sah.action());
+        debug!("emit_post_commit({}) - {}", this_zome_index, sah.action());
         let ah = sah.as_hash().to_owned();
         match sah.action() {
             ///
