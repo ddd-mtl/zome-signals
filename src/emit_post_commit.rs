@@ -6,6 +6,7 @@ use std::fmt::Debug;
 
 /// Emit Entry or Link signal on post_commit()
 pub fn emit_post_commit<E: UnitEnum, L: LinkTypesHelper + Debug>(signedActionList: Vec<SignedActionHashed>) {
+    let this_zome_index = zome_info().unwrap().id;
     /// Process each Action
     for sah in signedActionList {
         // debug!(" - {}", sah.action());
@@ -17,6 +18,11 @@ pub fn emit_post_commit<E: UnitEnum, L: LinkTypesHelper + Debug>(signedActionLis
                     else { error!("Failed to get CreateLink action"); continue };
                 let Action::CreateLink(create_link) = record.action()
                     else { error!("Record should be a CreateLink"); continue };
+                /// Bail if from other zome
+                if this_zome_index != create_link.zome_index {
+                    continue;
+                }
+                ///
                 let res = emit_link_delete_signal(delete_link, create_link, true);
                 if let Err(e) = res {
                     error!("Emitting DeleteLink signal failed: {:?}", e);
@@ -24,6 +30,11 @@ pub fn emit_post_commit<E: UnitEnum, L: LinkTypesHelper + Debug>(signedActionLis
             },
             ///
             Action::CreateLink(create_link) => {
+                /// Bail if from other zome
+                if this_zome_index != create_link.zome_index {
+                    continue;
+                }
+                /// Get LinkType
                 let Ok(Some(link_type)) = L::from_type(create_link.zome_index, create_link.link_type)
                     else { error!("CreateLink should have a LinkType. Could be a Link from a different zome: {} ({})", create_link.link_type.0, create_link.zome_index); continue };
                 //let _ = emit_system_signal(SystemSignalProtocol::PostCommitStart { entry_type: link_type.clone() });
@@ -40,8 +51,12 @@ pub fn emit_post_commit<E: UnitEnum, L: LinkTypesHelper + Debug>(signedActionLis
             Action::Create(_) => {
                 let EntryType::App(app_entry_def) = sah.action().entry_type().unwrap()
                     else { continue };
-                let type_variant = get_variant_from_index::<E>(app_entry_def.entry_index).unwrap();
+                /// Bail if from other zome
+                if this_zome_index != app_entry_def.zome_index {
+                    continue;
+                }
                 /// Emit System Signal
+                let type_variant = get_variant_from_index::<E>(app_entry_def.entry_index).unwrap();
                 let variant_name = format!("{:?}", type_variant);
                 let _ = emit_system_signal(SystemSignalProtocol::PostCommitNewStart { app_entry_type: variant_name.clone() });
                 /// Emit Entry Signal
@@ -63,8 +78,12 @@ pub fn emit_post_commit<E: UnitEnum, L: LinkTypesHelper + Debug>(signedActionLis
                     else { error!("Deleted entry not found."); continue; };
                 let Some(EntryType::App(app_entry_def)) = new_sah.action().entry_type()
                     else { error!("Deleted action should have entry_type."); continue; };
-                let type_variant = get_variant_from_index::<E>(app_entry_def.entry_index).unwrap();
+                /// Bail if from other zome
+                if this_zome_index != app_entry_def.zome_index {
+                    continue;
+                }
                 /// Emit System Signal
+                let type_variant = get_variant_from_index::<E>(app_entry_def.entry_index).unwrap();
                 let variant_name = format!("{:?}", type_variant);
                 let _ = emit_system_signal(SystemSignalProtocol::PostCommitDeleteStart { app_entry_type: variant_name.clone() });
                 /// Emit Entry Signal
