@@ -28,7 +28,7 @@ pub fn emit_post_commit<E: UnitEnum, L: LinkTypesHelper + Debug>(signedActionLis
             Action::CreateLink(create_link) => {
                 /// Get LinkType
                 let Ok(Some(link_type)) = L::from_type(create_link.zome_index, create_link.link_type)
-                    else { error!("CreateLink should have a LinkType. Could be a Link from a different zome: {} ({})", create_link.link_type.0, create_link.zome_index); continue };
+                    else { error!("CreateLink should have a LinkType. Could be a Link from a different zome: {} ({}) | {:?}", create_link.link_type.0, create_link.zome_index, create_link); continue };
                 //let _ = emit_system_signal(SystemSignalProtocol::PostCommitStart { entry_type: link_type.clone() });
                 debug!("CreateLink: {:?} ({}, {:?})", link_type, create_link.zome_index, create_link.link_type);
                 let res = emit_link_create_signal(ah, create_link, true);
