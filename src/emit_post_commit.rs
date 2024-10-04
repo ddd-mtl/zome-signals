@@ -62,7 +62,7 @@ pub fn emit_post_commit<E: UnitEnum, L: LinkTypesHelper + Debug>(signedActionLis
             Action::Delete(delete) => {
                 let Ok(new_sah) = must_get_action(delete.deletes_address.clone())
                     else { error!("Deleted action not found."); continue; };
-                let Ok(he) = must_get_entry(delete.deletes_entry_address.clone())
+                let Ok(eh) = must_get_entry(delete.deletes_entry_address.clone())
                     else { error!("Deleted entry not found."); continue; };
                 let Some(EntryType::App(app_entry_def)) = new_sah.action().entry_type()
                     else { error!("Deleted action should have entry_type."); continue; };
@@ -71,7 +71,7 @@ pub fn emit_post_commit<E: UnitEnum, L: LinkTypesHelper + Debug>(signedActionLis
                 let variant_name = format!("{:?}", type_variant);
                 let _ = emit_system_signal(SystemSignalProtocol::PostCommitDeleteStart { app_entry_type: variant_name.clone() });
                 /// Emit Entry Signal
-                let result = emit_delete_entry_signal(new_sah.hashed, he.content, true);
+                let result = emit_delete_entry_signal(new_sah.hashed, eh.content, true);
                 /// Emit System Signal
                 let _ = emit_system_signal(SystemSignalProtocol::PostCommitDeleteEnd { app_entry_type: variant_name, succeeded: result.is_ok() });
                 ///
