@@ -21,7 +21,7 @@ pub struct LinkPulse {
 #[derive(Serialize, Deserialize, SerializedBytes, Debug, Clone)]
 pub struct EntryPulse {
     state: StateChange,
-    prev_ah: Option<ActionHash>,
+    orig_ah: Option<ActionHash>,
     ah: ActionHash,
     eh: EntryHash,
     ts: Timestamp,
@@ -38,8 +38,8 @@ impl EntryPulse {
             Action::Update(_) => StateChange::Update(is_new),
             _ => return Err(wasm_error!("Unhandled Action type")),
         };
-        let prev_ah = match record.action() {
-            Action::Update(update) => Some(update.prev_action.clone()),
+        let orig_ah = match record.action() {
+            Action::Update(update) => Some(update.original_action_address.clone()),
             _ => None,
         };
 
@@ -49,7 +49,7 @@ impl EntryPulse {
             else { return Err(wasm_error!("Record has no entry def")) };
 
         Ok(Self {
-            prev_ah,
+            orig_ah,
             ah: record.action_address().to_owned(),
             eh: record.action().entry_hash().unwrap().clone(),
             ts: record.action().timestamp(),
@@ -73,7 +73,7 @@ impl EntryPulse {
             else { return Err(wasm_error!("Entry has no entry def")) };
 
         Ok(Self {
-            prev_ah: Some(delete.prev_action),
+            orig_ah: Some(delete.prev_action),
             ah: hashed.hash.to_owned(),
             eh: action.entry_hash().unwrap().clone(),
             ts: action.timestamp(),
