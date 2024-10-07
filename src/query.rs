@@ -23,16 +23,15 @@ pub fn query_all_entry(entry_type: EntryType) -> ExternResult<Vec<(Record, Entry
     let query_args = ChainQueryFilter::default()
         .include_entries(true)
         .action_type(ActionType::Create)
+        .action_type(ActionType::Update)
         .entry_type(entry_type);
     let records = query(query_args)?;
     /// Get entries for all results
     let mut entries = Vec::new();
     for record in records {
         let RecordEntry::Present(entry) = record.entry() else {
-            return Err(wasm_error!("Could not convert record"));
+            return Err(wasm_error!("Record should hold entry data"));
         };
-        // let Action::Create(create) = record.action()
-        //   else { panic!("Should be a create Action")};
         entries.push((record.clone(), entry.clone()))
     }
     /// Done

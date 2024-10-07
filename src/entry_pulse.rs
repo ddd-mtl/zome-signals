@@ -31,7 +31,7 @@ pub struct EntryPulse {
 }
 
 impl EntryPulse {
-    ///
+    /// Can't do delete here since it does not hold the entry data
     pub fn try_from_new_record(record: Record, is_new: bool) -> ExternResult<Self> {
         let state = match record.action() {
             Action::Create(_) => StateChange::Create(is_new),
