@@ -16,10 +16,10 @@ unused_attributes = "allow"
 
 [dependencies]
 serde = { version = "=1.0.203", default-features = false }
-hdk = { version = "=0.4.0-dev.14", default-features = false }
+hdk = { version = "=0.4.0-dev.19", default-features = false }
 
-# Broken hdk deps
-hdk_derive = { version = "=0.4.0-dev.12", default-features = false }
-holochain_integrity_types = "=0.4.0-dev.12"
+## Broken hdk deps
+#hdk_derive = { version = "=0.4.0-dev.12", default-features = false }
+#holochain_integrity_types = "=0.4.0-dev.12"
 
 
