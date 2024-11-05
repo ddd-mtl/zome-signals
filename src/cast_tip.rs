@@ -12,7 +12,7 @@ pub struct CastTipInput {
 
 ///
 #[hdk_extern]
-fn cast_tip(input: CastTipInput) -> ExternResult<()> {
+pub fn cast_tip(input: CastTipInput) -> ExternResult<()> {
   //std::panic::set_hook(Box::new(zome_panic_hook));
   debug!("Casting tip {:?} to {:?}", input.tip, input.peers);
   /// Pre-conditions: Don't call yourself (otherwise could get concurrency issues)
