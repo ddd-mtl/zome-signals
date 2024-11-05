@@ -12,3 +12,4 @@ pub use query::*;
 pub use entry_pulse::*;
 pub use emit_post_commit::*;
 pub use recv_remote_signal::*;
+pub use cast_tip::*;
