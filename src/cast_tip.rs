@@ -3,7 +3,7 @@ use hdk::prelude::*;
 use crate::*;
 
 
-#[derive(Serialize, Deserialize, SerializedBytes, Debug)]
+#[derive(Serialize, Deserialize, SerializedBytes, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct CastTipInput {
   pub tip: TipProtocol,
