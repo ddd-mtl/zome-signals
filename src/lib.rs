@@ -6,6 +6,7 @@ mod query;
 mod entry_pulse;
 mod emit_post_commit;
 
+pub use cast_tip::*;
 pub use emit_signal::*;
 pub use signal_protocols::*;
 pub use query::*;
