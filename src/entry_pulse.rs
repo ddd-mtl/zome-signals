@@ -20,14 +20,14 @@ pub struct LinkPulse {
 
 #[derive(Serialize, Deserialize, SerializedBytes, Debug, Clone)]
 pub struct EntryPulse {
-    state: StateChange,
-    prev_ah: Option<ActionHash>,
-    ah: ActionHash,
-    eh: EntryHash,
-    ts: Timestamp,
-    author: AgentPubKey,
-    def: AppEntryDef,
-    bytes: AppEntryBytes,
+    pub state: StateChange,
+    pub prev_ah: Option<ActionHash>,
+    pub ah: ActionHash,
+    pub eh: EntryHash,
+    pub ts: Timestamp,
+    pub author: AgentPubKey,
+    pub def: AppEntryDef,
+    pub bytes: AppEntryBytes,
 }
 
 impl EntryPulse {
