@@ -16,7 +16,7 @@ unused_attributes = "allow"
 
 [dependencies]
 serde = { version = "=1.0.203", default-features = false }
-hdk = { version = "=0.3.2", default-features = false }
+hdk = { version = "=0.3.4", default-features = false }
 
 #zome_utils = { git = "https://github.com/ddd-mtl/zome-utils", branch = "hdk-3.1" }
 
