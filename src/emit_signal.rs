@@ -34,13 +34,13 @@ pub fn emit_system_signal(sys: SystemSignalProtocol) -> ExternResult<()> {
 
 ///
 pub fn emit_new_entry_signal(record: Record, is_new: bool) -> ExternResult<()> {
-  let pulse = EntryPulse::try_from_new_record(record, is_new)?;
+  let pulse = EntryPulse::try_from_new_record(record, ValidatedBy::Me, is_new)?;
   return emit_zome_signal(vec![ZomeSignalProtocol::Entry(pulse)]);
 }
 
 ///
 pub fn emit_delete_entry_signal(ha: ActionHashed, entry: Entry, is_new: bool) -> ExternResult<()> {
-  let pulse = EntryPulse::try_from_delete_record(ha, entry, is_new)?;
+  let pulse = EntryPulse::try_from_delete_record(ha, entry, ValidatedBy::Me, is_new)?;
   return emit_zome_signal(vec![ZomeSignalProtocol::Entry(pulse)]);
 }
 
@@ -52,20 +52,20 @@ pub fn emit_delete_entry_signal(ha: ActionHashed, entry: Entry, is_new: bool) ->
 ///
 pub fn emit_link_delete_signal(delete: &DeleteLink, create: &CreateLink, is_new: bool) -> ExternResult<()> {
   let link = link_from_delete(delete, create);
-  let pulse = LinkPulse { link, state: StateChange::Delete(is_new)};
+  let pulse = LinkPulse { link, state: StateChange::Delete(is_new), validation: ValidatedBy::Me };
   return emit_zome_signal( vec![ZomeSignalProtocol::Link(pulse)]);
 }
 
 ///
 pub fn emit_link_create_signal(link_ah: ActionHash, create: &CreateLink, is_new: bool) -> ExternResult<()> {
   let link = link_from_create(link_ah, create);
-  return emit_zome_signal( vec![ZomeSignalProtocol::Link(LinkPulse {link, state: StateChange::Create(is_new)})]);
+  return emit_zome_signal( vec![ZomeSignalProtocol::Link(LinkPulse {link, state: StateChange::Create(is_new), validation: ValidatedBy::Me })]);
 }
 
 
 ///
 pub fn emit_link_signal(link: Link, state: StateChange) -> ExternResult<()> {
-  return emit_zome_signal(vec![ZomeSignalProtocol::Link(LinkPulse {link, state})]);
+  return emit_zome_signal(vec![ZomeSignalProtocol::Link(LinkPulse {link, state, validation: ValidatedBy::Me })]);
 }
 
 
@@ -74,7 +74,7 @@ pub fn emit_links_signal(links: Vec<Link>) -> ExternResult<()> {
   let pulses = links
     .into_iter()
     .map(|link| {
-      ZomeSignalProtocol::Link(LinkPulse { link, state: StateChange::Create(false)})
+      ZomeSignalProtocol::Link(LinkPulse { link, state: StateChange::Create(false), validation: ValidatedBy::Me })
     })
     .collect();
   emit_zome_signal(pulses)?;

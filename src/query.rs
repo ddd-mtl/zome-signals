@@ -7,7 +7,7 @@ pub fn query_all_typed<R: TryFrom<Entry>>(entry_type: EntryType) -> ExternResult
     /// Form & Emit Signal
     let pulses = tuples.into_iter()
         .map(|(record, _entry)| {
-            let entry_pulse = EntryPulse::try_from_new_record(record, false).unwrap();
+            let entry_pulse = EntryPulse::try_from_new_record(record, ValidatedBy::Me, false).unwrap();
             return ZomeSignalProtocol::Entry(entry_pulse);
         })
         .collect();

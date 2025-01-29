@@ -2,6 +2,14 @@ use hdk::map_extern::ExternResult;
 use hdk::prelude::*;
 
 
+/// ValidationStatus
+#[derive(Clone, Debug, Serialize, Deserialize, SerializedBytes)]
+pub enum ValidatedBy {
+    None,
+    Me,
+    Network,
+}
+
 /// Bool: True if state change just happened (real-time)
 #[derive(Clone, Debug, Serialize, Deserialize, SerializedBytes)]
 pub enum StateChange {
@@ -10,17 +18,19 @@ pub enum StateChange {
     Delete(bool),
 }
 
-
+///
 #[derive(Serialize, Deserialize, SerializedBytes, Debug, Clone)]
 pub struct LinkPulse {
     pub link: Link,
     pub state: StateChange,
+    pub validation: ValidatedBy,
 }
 
 
 #[derive(Serialize, Deserialize, SerializedBytes, Debug, Clone)]
 pub struct EntryPulse {
     state: StateChange,
+    validation: ValidatedBy,
     orig_ah: Option<ActionHash>,
     ah: ActionHash,
     eh: EntryHash,
@@ -32,7 +42,7 @@ pub struct EntryPulse {
 
 impl EntryPulse {
     /// Can't do delete here since it does not hold the entry data
-    pub fn try_from_new_record(record: Record, is_new: bool) -> ExternResult<Self> {
+    pub fn try_from_new_record(record: Record, validation: ValidatedBy, is_new: bool) -> ExternResult<Self> {
         let state = match record.action() {
             Action::Create(_) => StateChange::Create(is_new),
             Action::Update(_) => StateChange::Update(is_new),
@@ -55,6 +65,7 @@ impl EntryPulse {
             ts: record.action().timestamp(),
             author: record.action().author().clone(),
             state,
+            validation,
             def: def.to_owned(),
             bytes,
         })
@@ -62,7 +73,7 @@ impl EntryPulse {
 
 
     /// Input must be the NewEntryAction that is deleted
-    pub fn try_from_delete_record(hashed: ActionHashed, entry: Entry, is_new: bool) -> ExternResult<Self> {
+    pub fn try_from_delete_record(hashed: ActionHashed, entry: Entry, validation: ValidatedBy, is_new: bool) -> ExternResult<Self> {
         let action  = hashed.content;
         let Action::Delete(delete) = action.clone() else {
             return Err(wasm_error!("Unhandled Action type"));
@@ -79,6 +90,7 @@ impl EntryPulse {
             ts: action.timestamp(),
             author: action.author().clone(),
             state: StateChange::Delete(is_new),
+            validation,
             def: def.to_owned(),
             bytes,
         })
