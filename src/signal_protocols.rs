@@ -19,6 +19,21 @@ pub enum ZomeSignalProtocol {
     Tip(TipProtocol),  // From Other peer
 }
 
+impl ZomeSignalProtocol {
+    pub fn clear_validation(&mut self) {
+        // Reset ValidationBy to None
+        match self {
+            ZomeSignalProtocol::Entry(e) => {
+                e.clear_validation();
+            },
+            ZomeSignalProtocol::Link(l) => {
+                l.clear_validation();
+            },
+            _ => (),
+        };
+    }
+}
+
 
 /// Protocol for notifying the ViewModel (UI) of system level events
 #[derive(Serialize, Deserialize, SerializedBytes, Debug, Clone)]

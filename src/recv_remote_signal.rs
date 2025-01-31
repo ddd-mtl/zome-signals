@@ -7,14 +7,16 @@ use crate::*;
 #[hdk_extern]
 fn recv_remote_signal(pulse: ExternIO) -> ExternResult<()> {
   //std::panic::set_hook(Box::new(zome_panic_hook));
-  let pulse: ZomeSignalProtocol = pulse.decode()
+  let mut pulse: ZomeSignalProtocol = pulse.decode()
     .map_err(|e| wasm_error!(SerializedBytesError::Deserialize(e.to_string())))?;
-  let caller = call_info()?.provenance;
-  //debug!("Received signal from {}:{:?}", caller,  pulse);
+  // Received data is not 'safe'
+  pulse.clear_validation();
+  //
   let signal = ZomeSignal {
-    from: caller,
+    from: call_info()?.provenance,
     pulses: vec![pulse],
   };
+  //debug!("Received signal from {}:{:?}", caller,  pulse);
   Ok(emit_signal(&signal)?)
 }
 

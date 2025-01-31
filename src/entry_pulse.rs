@@ -1,13 +1,13 @@
 use hdk::map_extern::ExternResult;
 use hdk::prelude::*;
-
+use crate::ZomeSignalProtocol;
 
 /// ValidationStatus
 #[derive(Clone, Debug, Serialize, Deserialize, SerializedBytes)]
 pub enum ValidatedBy {
-    None,
-    Me,
-    Network,
+    None,    // Untrusted, e.g. received via signal
+    Me,      // I commited the entry/action
+    Network, // Trusted, received from DHT
 }
 
 /// Bool: True if state change just happened (real-time)
@@ -26,6 +26,11 @@ pub struct LinkPulse {
     pub validation: ValidatedBy,
 }
 
+impl LinkPulse {
+    pub fn clear_validation(&mut self) {
+        self.validation = ValidatedBy::None;
+    }
+}
 
 #[derive(Serialize, Deserialize, SerializedBytes, Debug, Clone)]
 pub struct EntryPulse {
@@ -41,6 +46,11 @@ pub struct EntryPulse {
 }
 
 impl EntryPulse {
+
+    pub fn clear_validation(&mut self) {
+        self.validation = ValidatedBy::None;
+    }
+
     /// Can't do delete here since it does not hold the entry data
     pub fn try_from_new_record(record: Record, validation: ValidatedBy, is_new: bool) -> ExternResult<Self> {
         let state = match record.action() {
