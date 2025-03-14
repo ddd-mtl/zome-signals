@@ -20,8 +20,8 @@ pub enum ZomeSignalProtocol {
 }
 
 impl ZomeSignalProtocol {
+    // Reset ValidationBy to None
     pub fn clear_validation(&mut self) {
-        // Reset ValidationBy to None
         match self {
             ZomeSignalProtocol::Entry(e) => {
                 e.clear_validation();
@@ -29,6 +29,17 @@ impl ZomeSignalProtocol {
             ZomeSignalProtocol::Link(l) => {
                 l.clear_validation();
             },
+            ZomeSignalProtocol::Tip(t) => {
+                match t {
+                    TipProtocol::Entry(e) => {
+                        e.clear_validation();
+                    },
+                    TipProtocol::Link(l) => {
+                        l.clear_validation();
+                    },
+                    _ => (),
+                }
+            }
             _ => (),
         };
     }

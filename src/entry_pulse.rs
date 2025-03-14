@@ -1,6 +1,5 @@
 use hdk::map_extern::ExternResult;
 use hdk::prelude::*;
-use crate::ZomeSignalProtocol;
 
 /// ValidationStatus
 #[derive(Clone, Debug, Serialize, Deserialize, SerializedBytes)]
