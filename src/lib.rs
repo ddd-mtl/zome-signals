@@ -5,6 +5,7 @@ mod recv_remote_signal;
 mod query;
 mod entry_pulse;
 mod emit_post_commit;
+mod call_app_tip;
 
 pub use emit_signal::*;
 pub use signal_protocols::*;
@@ -13,3 +14,4 @@ pub use entry_pulse::*;
 pub use emit_post_commit::*;
 pub use recv_remote_signal::*;
 pub use cast_tip::*;
+pub use call_app_tip::*;
