@@ -20,7 +20,7 @@ pub fn call_app_tip(input: CallAppTipInput) -> ExternResult<()> {
   //std::panic::set_hook(Box::new(zome_panic_hook));
   debug!("call_app_tip() recipient: {:?}", input.recipient);
   /// Pre-conditions: Don't call yourself (otherwise could get concurrency issues)
-  let me = agent_info()?.agent_latest_pubkey;
+  let me = agent_info()?.agent_initial_pubkey;
   if me == input.recipient {
     return Ok(());
   }

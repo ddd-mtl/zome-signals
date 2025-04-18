@@ -8,7 +8,7 @@ pub fn emit_zome_signal(pulses: Vec<ZomeSignalProtocol>) -> ExternResult<()> {
     return Ok(());
   }
   let signal = ZomeSignal {
-    from: agent_info()?.agent_latest_pubkey,
+    from: agent_info()?.agent_initial_pubkey,
     pulses,
   };
   return emit_signal(&signal);
@@ -21,7 +21,7 @@ pub fn emit_zome_signal(pulses: Vec<ZomeSignalProtocol>) -> ExternResult<()> {
 ///
 pub fn emit_system_signal(sys: SystemSignalProtocol) -> ExternResult<()> {
   let signal = ZomeSignal {
-    from: agent_info()?.agent_latest_pubkey,
+    from: agent_info()?.agent_initial_pubkey,
     pulses: vec![ZomeSignalProtocol::System(sys)],
   };
   return emit_signal(&signal);
