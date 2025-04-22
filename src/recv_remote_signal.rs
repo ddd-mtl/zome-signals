@@ -27,7 +27,7 @@ pub fn create_signal_cap_grant() -> ExternResult<ActionHash> {
   fns.insert((zome_info()?.name, FunctionName("recv_remote_signal".into())));
   let cap_grant_entry: CapGrantEntry = CapGrantEntry::new(
     String::from("recv_remote_signal"), // A string by which to later query for saved grants.
-    ().into(), // Unrestricted access means any external agent can call the extern
+    CapAccess::Unrestricted, // Unrestricted access means any external agent can call the extern
     GrantedFunctions::Listed(fns),
   );
   return create_cap_grant(cap_grant_entry);
