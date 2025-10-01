@@ -13,10 +13,10 @@ pub struct ZomeSignal {
 ///
 #[derive(Serialize, Deserialize, SerializedBytes, Debug, Clone)]
 pub enum ZomeSignalProtocol {
-    System(SystemSignalProtocol), // From "System"
-    Entry(EntryPulse), // From self
-    Link(LinkPulse),   // From self
-    Tip(TipProtocol),  // From Other peer
+    System(SystemAttestation),
+    Entry(EntryPulse),
+    Link(LinkPulse),
+    Tip(TipProtocol),
 }
 
 impl ZomeSignalProtocol {
@@ -46,27 +46,25 @@ impl ZomeSignalProtocol {
 }
 
 
-/// Protocol for notifying the ViewModel (UI) of system level events
+/// Zome-agnostic attestation
 #[derive(Serialize, Deserialize, SerializedBytes, Debug, Clone)]
 #[serde(tag = "type")]
-pub enum SystemSignalProtocol {
-    PostCommitNewStart {app_entry_type: String},
-    PostCommitNewEnd {app_entry_type: String, succeeded: bool},
-    PostCommitDeleteStart {app_entry_type: String},
-    PostCommitDeleteEnd {app_entry_type: String, succeeded: bool},
+pub enum SystemAttestation {
+    PostCommitLink {link_type: u8, is_delete: bool, succeeded: bool},
+    PostCommitEntry {app_entry_type: String, is_delete: bool, succeeded: bool},
     SelfCallStart {zome_name: String, fn_name: String},
     SelfCallEnd {zome_name: String, fn_name: String, succeeded: bool},
 }
 
 
-/// Used by UI ONLY. That's why we use B64 here.
+/// Protocol used by UI ONLY to send data to other agents
 #[derive(Serialize, Deserialize, SerializedBytes, Debug, Clone)]
 pub enum TipProtocol {
     Ping(AgentPubKey),
     Pong(AgentPubKey),
     Entry(EntryPulse),
     Link(LinkPulse),
-    App(SerializedBytes),
+    App(SerializedBytes), // App specific data
 }
 
 

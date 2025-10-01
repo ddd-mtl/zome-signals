@@ -19,7 +19,7 @@ pub fn emit_zome_signal(pulses: Vec<ZomeSignalProtocol>) -> ExternResult<()> {
 ///-------------------------------------------------------------------------------------------------
 
 ///
-pub fn emit_system_signal(sys: SystemSignalProtocol) -> ExternResult<()> {
+pub fn emit_system_signal(sys: SystemAttestation) -> ExternResult<()> {
   let signal = ZomeSignal {
     from: agent_info()?.agent_initial_pubkey,
     pulses: vec![ZomeSignalProtocol::System(sys)],
@@ -33,15 +33,28 @@ pub fn emit_system_signal(sys: SystemSignalProtocol) -> ExternResult<()> {
 ///-------------------------------------------------------------------------------------------------
 
 ///
-pub fn emit_new_entry_signal(record: Record, is_new: bool) -> ExternResult<()> {
+pub fn attest_entry_created(record: Record, is_new: bool) -> ExternResult<()> {
   let pulse = EntryPulse::try_from_new_record(record, ValidatedBy::Me, is_new)?;
   return emit_zome_signal(vec![ZomeSignalProtocol::Entry(pulse)]);
 }
 
 ///
-pub fn emit_delete_entry_signal(ha: ActionHashed, entry: Entry, is_new: bool) -> ExternResult<()> {
+pub fn attest_entry_deleted(ha: ActionHashed, entry: Entry, is_new: bool) -> ExternResult<()> {
   let pulse = EntryPulse::try_from_delete_record(ha, entry, ValidatedBy::Me, is_new)?;
   return emit_zome_signal(vec![ZomeSignalProtocol::Entry(pulse)]);
+}
+
+
+///
+pub fn attest_new_entry(sah: SignedActionHashed) -> ExternResult<()> {
+    let Some(eh) = sah.action().entry_hash() else {
+        return Err(wasm_error!("Action has no Entry"));
+    };
+    let entry = must_get_entry(eh.to_owned())?.content;
+    let record = Record::new(sah, Some(entry));
+    /// Emit Signal
+    attest_entry_created(record, true)?;
+    Ok(())
 }
 
 
@@ -50,27 +63,27 @@ pub fn emit_delete_entry_signal(ha: ActionHashed, entry: Entry, is_new: bool) ->
 ///-------------------------------------------------------------------------------------------------
 
 ///
-pub fn emit_link_delete_signal(delete: &DeleteLink, create: &CreateLink, is_new: bool) -> ExternResult<()> {
+pub fn attest_link_deleted(delete: &DeleteLink, create: &CreateLink, is_new: bool) -> ExternResult<()> {
   let link = link_from_delete(delete, create);
   let pulse = LinkPulse { link, state: StateChange::Delete(is_new), validation: ValidatedBy::Me };
   return emit_zome_signal( vec![ZomeSignalProtocol::Link(pulse)]);
 }
 
 ///
-pub fn emit_link_create_signal(link_ah: ActionHash, create: &CreateLink, is_new: bool) -> ExternResult<()> {
+pub fn attest_link_created(link_ah: ActionHash, create: &CreateLink, is_new: bool) -> ExternResult<()> {
   let link = link_from_create(link_ah, create);
   return emit_zome_signal( vec![ZomeSignalProtocol::Link(LinkPulse {link, state: StateChange::Create(is_new), validation: ValidatedBy::Me })]);
 }
 
 
 ///
-pub fn emit_link_signal(link: Link, state: StateChange) -> ExternResult<()> {
+pub fn attest_link(link: Link, state: StateChange) -> ExternResult<()> {
   return emit_zome_signal(vec![ZomeSignalProtocol::Link(LinkPulse {link, state, validation: ValidatedBy::Me })]);
 }
 
 
 ///
-pub fn emit_links_signal(links: Vec<Link>) -> ExternResult<()> {
+pub fn attest_links(links: Vec<Link>) -> ExternResult<()> {
   let pulses = links
     .into_iter()
     .map(|link| {
@@ -80,7 +93,6 @@ pub fn emit_links_signal(links: Vec<Link>) -> ExternResult<()> {
   emit_zome_signal(pulses)?;
   Ok(())
 }
-
 
 
 ///

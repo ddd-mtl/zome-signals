@@ -1,25 +1,26 @@
 use hdk::prelude::*;
 use crate::*;
 
-///
-pub fn query_all_typed<R: TryFrom<Entry>>(entry_type: EntryType) -> ExternResult<()> {
+/// Attest all entries of a given entry type in the local source-chain
+pub fn attest_all_local_typed<R: TryFrom<Entry>>(entry_type: EntryType) -> ExternResult<()> {
     let tuples = query_all_entry(entry_type)?;
-    /// Form & Emit Signal
+    /// Form signal
     let pulses = tuples.into_iter()
         .map(|(record, _entry)| {
             let entry_pulse = EntryPulse::try_from_new_record(record, ValidatedBy::Me, false).unwrap();
             return ZomeSignalProtocol::Entry(entry_pulse);
         })
         .collect();
+    /// Emit Signal
     emit_zome_signal(pulses)?;
     /// Done
     Ok(())
 }
 
 
-/// Return vec of typed entries of given entry type found in local source chain
+/// Return all entries of a given entry type present in the local source-chain
 pub fn query_all_entry(entry_type: EntryType) -> ExternResult<Vec<(Record, Entry)>> {
-    /// Query type
+    /// Query
     let query_args = ChainQueryFilter::default()
         .include_entries(true)
         .action_type(ActionType::Create)

@@ -4,8 +4,8 @@ use hdk::prelude::*;
 /// ValidationStatus
 #[derive(Clone, Debug, Serialize, Deserialize, SerializedBytes)]
 pub enum ValidatedBy {
-    None,    // Untrusted, e.g. received via signal
-    Me,      // I commited the entry/action
+    None,    // Untrusted, e.g. received remotely from another agent
+    Me,      // I commited the action
     Network, // Trusted, received from DHT
 }
 

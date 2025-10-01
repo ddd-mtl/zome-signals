@@ -13,12 +13,11 @@ pub struct CallAppTipInput {
 }
 
 
-/// Use call_remote() for sending an AppTip.
-/// Used by UI to make sure tip has been received, since remote_signal does not guarantee that.
+/// Use call_remote() for sending an AppTip to a remote agent.
+/// To be used by UI for making sure tip has been received, since remote_signal does not guarantee that.
 #[hdk_extern]
-pub fn call_app_tip(input: CallAppTipInput) -> ExternResult<()> {
-  //std::panic::set_hook(Box::new(zome_panic_hook));
-  debug!("call_app_tip() recipient: {:?}", input.recipient);
+pub fn call_remote_app_tip(input: CallAppTipInput) -> ExternResult<()> {
+  std::panic::set_hook(Box::new(panic_hook));
   /// Pre-conditions: Don't call yourself (otherwise could get concurrency issues)
   let me = agent_info()?.agent_initial_pubkey;
   if me == input.recipient {
@@ -35,9 +34,8 @@ pub fn call_app_tip(input: CallAppTipInput) -> ExternResult<()> {
     ExternIO::encode(pulse).unwrap(),
   );
   if let Err(e) = res {
-    error!("recv_remote_signal() failed during call_app_tip(): {:?}", e);
-    return Err(wasm_error!("recv_remote_signal() failed during call_app_tip()"));
+    error!("recv_remote_signal() failed during call_remote_app_tip(): {:?}", e);
+    return Err(wasm_error!("recv_remote_signal() failed during call_remote_app_tip()"));
   }
-  trace!("calling remote recv_remote_signal() DONE");
   Ok(())
 }
