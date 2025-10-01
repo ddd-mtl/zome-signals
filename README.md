@@ -1,7 +1,7 @@
 # Zome Signals
 
 This module implements a foundation layer for a signal-based architecture for Holochain applications.
-This library is to be included directly in a zome as a dependency and not be a zome in itself.
+This library is to be included directly in a coordinator zome as a dependency and not as a standalone coordinator zome.
 
 ## Usage
 

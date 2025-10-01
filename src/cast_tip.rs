@@ -13,7 +13,7 @@ pub struct CastTipInput {
 ///
 #[hdk_extern]
 pub fn cast_tip(input: CastTipInput) -> ExternResult<()> {
-  std::panic::set_hook(Box::new(panic_hook));
+  std::panic::set_hook(Box::new(zome_panic_hook));
   /// Don't call yourself (otherwise could get concurrency issues)
   let me = agent_info()?.agent_initial_pubkey;
   let filtered = input.peers.into_iter().filter(|agent| agent != &me).collect();

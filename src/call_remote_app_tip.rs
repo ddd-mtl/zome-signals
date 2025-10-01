@@ -17,7 +17,7 @@ pub struct CallAppTipInput {
 /// To be used by UI for making sure tip has been received, since remote_signal does not guarantee that.
 #[hdk_extern]
 pub fn call_remote_app_tip(input: CallAppTipInput) -> ExternResult<()> {
-  std::panic::set_hook(Box::new(panic_hook));
+  std::panic::set_hook(Box::new(zome_panic_hook));
   /// Pre-conditions: Don't call yourself (otherwise could get concurrency issues)
   let me = agent_info()?.agent_initial_pubkey;
   if me == input.recipient {

@@ -13,7 +13,7 @@ pub(crate) fn get_variant_from_index<T: UnitEnum>(entry_index: EntryDefIndex) ->
 }
 
 /// Panic hook for debugging crashes in zomes.
-pub(crate) fn panic_hook(info: &std::panic::PanicHookInfo) {
+pub(crate) fn zome_panic_hook(info: &std::panic::PanicHookInfo) {
     let mut msg = "\n\nPanic during zome call ".to_owned();
     msg.push_str(&dump_context());
     msg.push_str("\n\n");
