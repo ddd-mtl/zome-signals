@@ -6,25 +6,23 @@ use crate::*;
 
 #[derive(Serialize, Deserialize, SerializedBytes, Debug)]
 #[serde(rename_all = "camelCase")]
-pub struct CallAppTipInput {
-  pub app_tip: SerializedBytes,
+pub struct SynchronizeTipInput {
+  pub tip: TipProtocol,
   pub recipient: AgentPubKey,
   pub zome_name: String,
 }
 
 
-/// Use call_remote() for sending an AppTip to a remote agent.
-/// To be used by UI for making sure tip has been received, since remote_signal does not guarantee that.
+/// To be used by app clients for making sure a tip has been received (by using `call_remote()`).
 #[hdk_extern]
-pub fn call_remote_app_tip(input: CallAppTipInput) -> ExternResult<()> {
+pub fn synchronize_tip(input: SynchronizeTipInput) -> ExternResult<()> {
   std::panic::set_hook(Box::new(zome_panic_hook));
   /// Pre-conditions: Don't call yourself (otherwise could get concurrency issues)
-  let me = agent_info()?.agent_initial_pubkey;
-  if me == input.recipient {
+  if input.recipient == agent_info()?.agent_initial_pubkey {
     return Ok(());
   }
   /// Prepare payload
-  let pulse = ZomeSignalProtocol::Tip(TipProtocol::App(input.app_tip));
+  let pulse = ZomeSignalProtocol::Tip(input.tip.clone());
   /// call
   let res = call_remote(
     input.recipient,
@@ -34,8 +32,8 @@ pub fn call_remote_app_tip(input: CallAppTipInput) -> ExternResult<()> {
     ExternIO::encode(pulse).unwrap(),
   );
   if let Err(e) = res {
-    error!("recv_remote_signal() failed during call_remote_app_tip(): {:?}", e);
-    return Err(wasm_error!("recv_remote_signal() failed during call_remote_app_tip()"));
+    error!("recv_remote_signal() failed during synchronize_tip(): {:?}", e);
+    return Err(wasm_error!("recv_remote_signal() failed during synchronize_tip()"));
   }
   Ok(())
 }

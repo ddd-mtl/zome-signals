@@ -46,7 +46,7 @@ impl ZomeSignalProtocol {
 }
 
 
-/// Zome-agnostic attestation
+/// App-agnostic attestation
 #[derive(Serialize, Deserialize, SerializedBytes, Debug, Clone)]
 #[serde(tag = "type")]
 pub enum SystemAttestation {
@@ -64,7 +64,8 @@ pub enum TipProtocol {
     Pong(AgentPubKey),
     Entry(EntryPulse),
     Link(LinkPulse),
-    App(SerializedBytes), // App specific data
+    AppCustom(SerializedBytes), // App specific data
+    AppValue((String, String)) // Key-Value pair
 }
 
 

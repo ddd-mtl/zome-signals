@@ -7,7 +7,7 @@ This library is to be included directly in a coordinator zome as a dependency an
 
 This module defines `recv_remote_signal()` which must be initialized in your zome's `init()` callback by calling `create_signal_cap_grant()`.
 
-This module also defines `cast_tip()` and `call_remote_app_tip()` zome functions intended to be called by UI components for sending signals to remote agents.
+This module also defines `cast_tip()` and `synchronize_tip()` zome functions intended to be called by UI components for sending signals to remote agents.
 
 Use `emit_zome_signal()` in your zome functions or callbacks to send a signal to app clients.
 
@@ -45,18 +45,22 @@ When a *Signal* is used to communicate to remote agents it is called a ***Tip***
 
 When a *Signal* is used to communicate to app clients it is called an ***Attestation***.
 
-A **Signal** is a data structure composed of multiple **Pulses** that together represent a complete communication message.
-
-A *Signal* is composed of multiple **Pulses**, where each **Pulse** represents an individual data point. 
-
-
-A ***System Pulse*** is a *Pulse* informing about an internal zome-agnostic event.
-
-An ***Entry Pulse*** is a *Pulse* informing about a Zome Entry.
-
-A ***Link Pulse*** is a *Pulse* informing about a Zome Link.
-
 A *Signal* is **emitted**, while a *Tip* is **cast** and an *Attestation* is **attested**.
+
+A *Signal* is composed of multiple **Pulses**, where each **Pulse** represents an individual data point.
+ - A ***System Pulse*** is a *Pulse* informing about an internal app-agnostic event.
+ - An ***Entry Pulse*** is a *Pulse* informing about a Zome Entry.
+ - A ***Link Pulse*** is a *Pulse* informing about a Zome Link.
+ - A ***Value Pulse*** is a *Pulse* transmitting App specific data in a generic key-value pair as string.
+ - A ***Custom Pulse*** is a *Pulse* transmitting App specific data in an app-specific format.
+
+A transmission is either **inbound** if its <ins>from</ins> a remote agent or **outbound** if its <ins>to</ins> a remote agent.
+
+A transmission is either **local** if its between zomes on the same source-chain or **remote** if its between zomes on different source-chains.
+
+A transmission is **synchronous** if it halts execution until a response is received.
+
+A transmission is a **request** if it's expecting a response with data.
 
 
 

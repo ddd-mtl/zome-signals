@@ -3,7 +3,7 @@ use hdk::prelude::*;
 use crate::*;
 use std::fmt::Debug;
 
-/// Attest Entry or Link on post_commit()
+/// Attest Entry or Link on post_commit() as well as SystemAttestation of a PostCommit
 pub fn attest_post_commit<E: UnitEnum, L: LinkTypesHelper + Debug>(signed_actions: Vec<SignedActionHashed>) {
     /// Process each Action
     for sah in signed_actions {

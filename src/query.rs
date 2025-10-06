@@ -19,7 +19,7 @@ pub fn attest_all_local_typed<R: TryFrom<Entry>>(entry_type: EntryType) -> Exter
 
 
 /// Return all entries of a given entry type present in the local source-chain
-pub fn query_all_entry(entry_type: EntryType) -> ExternResult<Vec<(Record, Entry)>> {
+ fn query_all_entry(entry_type: EntryType) -> ExternResult<Vec<(Record, Entry)>> {
     /// Query
     let query_args = ChainQueryFilter::default()
         .include_entries(true)
@@ -27,7 +27,7 @@ pub fn query_all_entry(entry_type: EntryType) -> ExternResult<Vec<(Record, Entry
         .action_type(ActionType::Update)
         .entry_type(entry_type);
     let records = query(query_args)?;
-    /// Get entries for all results
+    /// Get entries of all results
     let mut entries = Vec::new();
     for record in records {
         let RecordEntry::Present(entry) = record.entry() else {
